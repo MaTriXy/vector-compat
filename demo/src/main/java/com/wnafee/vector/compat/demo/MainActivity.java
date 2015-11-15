@@ -14,16 +14,21 @@ package com.wnafee.vector.compat.demo;
  * the License.
  */
 
-import android.graphics.Color;
-import android.graphics.PorterDuff;
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
+import android.widget.Toast;
 
-import com.wnafee.vector.compat.VectorDrawable;
+import com.wnafee.vector.MorphButton;
+import com.wnafee.vector.MorphButton.MorphState;
+import com.wnafee.vector.MorphButton.OnStateChangedListener;
 
+@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class MainActivity extends ActionBarActivity {
 
     @Override
@@ -31,11 +36,26 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        VectorDrawable vd = VectorDrawable.getDrawable(this, R.drawable.ic_arrow_vector);
-        vd.setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
-        
-        Button btn = (Button) findViewById(R.id.myBtn);
-        btn.setBackgroundDrawable(vd);
+
+        // Example of adding MorphButton in java
+        MorphButton mb = new MorphButton(this);
+        LayoutParams p = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        mb.setLayoutParams(p);
+
+        mb.setBackgroundTintList(getResources().getColorStateList(R.color.background_tint_color));
+        mb.setForegroundTintList(getResources().getColorStateList(R.color.foreground_tint_color));
+        mb.setStartDrawable(R.drawable.ic_pause_to_play);
+        mb.setEndDrawable(R.drawable.ic_play_to_pause);
+        mb.setOnStateChangedListener(new OnStateChangedListener() {
+            @Override
+            public void onStateChanged(MorphState changedTo, boolean isAnimating) {
+                // Do something here
+                Toast.makeText(MainActivity.this, "Changed to: " + changedTo, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        LinearLayout ll = (LinearLayout) findViewById(R.id.base_view);
+        ll.addView(mb);
     }
 
 

@@ -225,6 +225,26 @@ public class MorphButton extends CompoundButton {
     }
 
     @Override
+    public void refreshDrawableState() {
+        super.refreshDrawableState();
+        refreshCurrentDrawable();
+    }
+
+    private void refreshCurrentDrawable() {
+        if (mCurrentDrawable != null) {
+            mCurrentDrawable.setState(getDrawableState());
+        }
+    }
+
+    @Override
+    public void jumpDrawablesToCurrentState() {
+        super.jumpDrawablesToCurrentState();
+        if (mCurrentDrawable != null) {
+            mCurrentDrawable.jumpToCurrentState();
+        }
+    }
+
+    @Override
     public void setSelected(boolean selected) {
         super.setSelected(selected);
         resizeFromDrawable(mState);
@@ -344,7 +364,9 @@ public class MorphButton extends CompoundButton {
      */
     @SuppressWarnings("deprecation")
     public void setState(MorphState state, boolean animate) {
+        boolean checked;
         if (state == MorphState.START) {
+            checked = false;
             int w = mEndCanMorph ? mEndDrawableWidth : mStartDrawableWidth;
             int h = mEndCanMorph ? mEndDrawableHeight : mStartDrawableHeight;
             setCurrentDrawable(mEndCanMorph ? mEndDrawable : mStartDrawable, w, h);
@@ -353,6 +375,7 @@ public class MorphButton extends CompoundButton {
                 endEndAnimation();
             }
         } else {
+            checked = true;
             int w = mStartCanMorph ? mStartDrawableWidth : mEndDrawableWidth;
             int h = mStartCanMorph ? mStartDrawableHeight : mEndDrawableHeight;
             setCurrentDrawable(mStartCanMorph ? mStartDrawable : mEndDrawable, w, h);
@@ -367,6 +390,9 @@ public class MorphButton extends CompoundButton {
             return;
         }
 
+        // Update checked state of button
+        super.setChecked(checked);
+
         mState = state;
         if (mStateListener != null) {
             mStateListener.onStateChanged(state, animate);
@@ -378,7 +404,6 @@ public class MorphButton extends CompoundButton {
         if (!mIsToggling) {
             setState(checked ? MorphState.END : MorphState.START);
         }
-        super.setChecked(checked);
     }
 
     @Override
